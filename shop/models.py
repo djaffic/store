@@ -1,6 +1,7 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
+
 class Category(MPTTModel):
     """Категории товаров"""
     name = models.CharField("Название категории", max_length=50, unique=True)
@@ -16,6 +17,7 @@ class Category(MPTTModel):
 
     def __str__(self):
         return self.name
+
 
 class Product(models.Model):
     """Модель товара"""
@@ -33,3 +35,28 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CartItem(models.Model):
+    product = models.ForeignKey(Product, verbose_name="Товар", on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField("Количество товара", default=1)
+    item_amount = models.PositiveIntegerField("Cтоимость товара", default=0)
+
+    class Meta:
+        verbose_name = "Товар в корзине"
+        verbose_name_plural = "Товары в корзине"
+
+    def __str__(self):
+        return self.product.title
+
+
+class Cart(models.Model):
+    items = models.ManyToManyField(CartItem, blank=True)
+    cart_amount = models.PositiveIntegerField("Сумма", default=0)
+
+    class Meta:
+        verbose_name = "Корзина"
+        verbose_name_plural = "Корзины"
+
+    def __str__(self):
+        return str(self.id)
