@@ -1,5 +1,8 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Category(MPTTModel):
@@ -36,11 +39,24 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+class Cart(models.Model):
+    """Модель корзины"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    accepted = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Корзина"
+        verbose_name_plural = "Корзины"
+
+    def __str__(self):
+        return str(self.id)
+
 
 class CartItem(models.Model):
+    """Модель товара в корзине"""
     product = models.ForeignKey(Product, verbose_name="Товар", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField("Количество товара", default=1)
-    item_amount = models.PositiveIntegerField("Cтоимость товара", default=0)
+    cart = models.ForeignKey(Cart, verbose_name="Корзина")
 
     class Meta:
         verbose_name = "Товар в корзине"
@@ -50,13 +66,6 @@ class CartItem(models.Model):
         return self.product.title
 
 
-class Cart(models.Model):
-    items = models.ManyToManyField(CartItem, blank=True)
-    cart_amount = models.PositiveIntegerField("Сумма", default=0)
-
-    class Meta:
-        verbose_name = "Корзина"
-        verbose_name_plural = "Корзины"
-
-    def __str__(self):
-        return str(self.id)
+class Orders(models.Model):
+    cart = models.OneToOneField(Cart, verbose_name="Корзина")
+    accepted = models.BooleanField("Принят", default=False)
