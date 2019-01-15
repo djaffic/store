@@ -56,7 +56,7 @@ class CartItem(models.Model):
     """Модель товара в корзине"""
     product = models.ForeignKey(Product, verbose_name="Товар", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField("Количество товара", default=1)
-    cart = models.ForeignKey(Cart, verbose_name="Корзина")
+    cart = models.ForeignKey(Cart, verbose_name="Корзина", on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Товар в корзине"
@@ -67,5 +67,5 @@ class CartItem(models.Model):
 
 
 class Orders(models.Model):
-    cart = models.OneToOneField(Cart, verbose_name="Корзина")
+    cart = models.OneToOneField(Cart, verbose_name="Корзина", on_delete=models.CASCADE)
     accepted = models.BooleanField("Принят", default=False)
